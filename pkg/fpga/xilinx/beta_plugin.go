@@ -69,11 +69,11 @@ func (s *pluginServiceV1Beta1) Allocate(ctx context.Context, requests *pluginapi
 				return nil, fmt.Errorf("invalid allocation request with unhealthy device %s", id)
 			}
 			go s.allocateDevice(id, image)
-			resp.Devices = append(resp.Devices, &pluginapi.DeviceSpec{
-				HostPath:      pciDevicesPath + "/" + id,
-				ContainerPath: pciDevicesPath + "/" + id,
-				Permissions:   "mrw",
-			})
+			// resp.Devices = append(resp.Devices, &pluginapi.DeviceSpec{
+			// 	HostPath:      pciDevicesPath + "/" + id,
+			// 	ContainerPath: pciDevicesPath + "/" + id,
+			// 	Permissions:   "mrw",
+			// })
 		}
 		// Add all default devices to Allocate Response
 		for _, d := range s.ngm.defaultDevices {

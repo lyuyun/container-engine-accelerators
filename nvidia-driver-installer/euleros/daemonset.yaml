@@ -14,7 +14,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: accelerator
+              - key: accelerator-fpga
                 operator: Exists
       hostNetwork: true
       hostPID: true
@@ -28,7 +28,7 @@ spec:
         hostPath:
           path: /
       initContainers:
-      - image: 100.125.0.198:20202/joshuajsh9499/fp1-driver-installer:1.0
+      - image: 100.125.0.198:20202/fangjy-fpga/fp1-driver-installer:1.0
         name: fp1-driver-installer
         resources:
           requests:
@@ -48,5 +48,5 @@ spec:
         - name: root-mount
           mountPath: /root
       containers:
-      - image: "cfe-pause:3.7.2"
+      - image: "cfe-pause:5.7.2"
         name: pause
