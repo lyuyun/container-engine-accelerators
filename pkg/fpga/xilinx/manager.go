@@ -76,26 +76,24 @@ func (ngm *xilinxFPGAManager) discoverFPGAs() error {
 	}
 
 	for _, f := range files {
-		if f.IsDir() {
-			var domain, bus, device, function int
-			dirName := f.Name()
-			n, err := fmt.Sscanf(dirName, pciDevFmt, &domain, &bus, &device, &function)
-			if err != nil || n != 4 {
-				continue
-			}
-			vendorID, err := getFileData(pciDevVendorPath, dirName)
-			if err != nil {
-				continue
-			}
-			deviceID, err := getFileData(pciDevDevicePath, dirName)
-			if err != nil {
-				continue
-			}
-			if (vendorID == hwDPDKVFVendorID && deviceID == hwDPDKVFDeviceID) ||
-				(vendorID == hwOCLPFVendorID && deviceID == hwOCLPFDeviceID) {
-				glog.Infof("Found Xilinx FPGA %q, VendorID %q, DeviceID %q\n", dirName, vendorID, deviceID)
-				ngm.devices[f.Name()] = pluginapi.Device{ID: dirName, Health: pluginapi.Healthy}
-			}
+		var domain, bus, device, function int
+		dirName := f.Name()
+		n, err := fmt.Sscanf(dirName, pciDevFmt, &domain, &bus, &device, &function)
+		if err != nil || n != 4 {
+			continue
+		}
+		vendorID, err := getFileData(pciDevVendorPath, dirName)
+		if err != nil {
+			continue
+		}
+		deviceID, err := getFileData(pciDevDevicePath, dirName)
+		if err != nil {
+			continue
+		}
+		if (vendorID == hwDPDKVFVendorID && deviceID == hwDPDKVFDeviceID) ||
+			(vendorID == hwOCLPFVendorID && deviceID == hwOCLPFDeviceID) {
+			glog.Infof("Found Xilinx FPGA %q, VendorID %q, DeviceID %q\n", dirName, vendorID, deviceID)
+			ngm.devices[f.Name()] = pluginapi.Device{ID: dirName, Health: pluginapi.Healthy}
 		}
 	}
 

@@ -82,11 +82,11 @@ func (s *pluginServiceV1Alpha) Allocate(ctx context.Context, rqt *pluginapi.Allo
 		})
 	}
 
-	resp.Mounts = append(resp.Mounts, &pluginapi.Mount{
-		ContainerPath: s.ngm.containerPathPrefix,
-		HostPath:      s.ngm.hostPathPrefix,
-		ReadOnly:      true,
-	})
+	// resp.Mounts = append(resp.Mounts, &pluginapi.Mount{
+	// 	ContainerPath: s.ngm.containerPathPrefix,
+	// 	HostPath:      s.ngm.hostPathPrefix,
+	// 	ReadOnly:      true,
+	// })
 	resp.Envs = map[string]string{
 		"LD_LIBRARY_PATH": fmt.Sprintf("%s/lib:${LD_LIBRARY_PATH}", s.ngm.containerPathPrefix),
 	}
