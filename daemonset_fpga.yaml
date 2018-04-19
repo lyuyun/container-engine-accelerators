@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: xilinx-fpga-device-plugin
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        name: xilinx-fpga-device-plugin
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: accelerator
+                operator: Exists
+      hostNetwork: true
+      hostPID: true
+      imagePullSecrets:
+      - name: default-secret
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: device-plugin
+        hostPath:
+          path: /var/lib/kubelet/device-plugins
+      containers:
+      - command:
+        - /usr/local/bin/xilinx-fpga-device-plugin
+        - -logtostderr
+        - -v=3
+        image: 100.125.0.198:20202/joshuajsh9499/xilinx-fpga-device-plugin:1.0
+        name: xilinx-fpga-device-plugin
+        resources:
+          requests:
+            cpu: 0.15
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dev
+          mountPath: /dev
+        - name: device-plugin
+          mountPath: /device-plugin
