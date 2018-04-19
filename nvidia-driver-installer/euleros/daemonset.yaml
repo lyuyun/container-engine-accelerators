@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: fp1-driver-installer
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        name: fp1-driver-installer
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: accelerator
+                operator: Exists
+      hostNetwork: true
+      hostPID: true
+      imagePullSecrets:
+      - name: default-secret
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: root-mount
+        hostPath:
+          path: /
+      initContainers:
+      - image: 100.125.0.198:20202/joshuajsh9499/fp1-driver-installer:1.0
+        name: fp1-driver-installer
+        resources:
+          requests:
+            cpu: 0.15
+        securityContext:
+          privileged: true
+        env:
+          - name: FP1_INSTALL_DIR_HOST
+            value: /usr/local/fp1
+          - name: FP1_INSTALL_DIR_CONTAINER
+            value: /var/paas/fp1
+          - name: ROOT_MOUNT_DIR
+            value: /root
+        volumeMounts:
+        - name: dev
+          mountPath: /dev
+        - name: root-mount
+          mountPath: /root
+      containers:
+      - image: "cfe-pause:3.7.2"
+        name: pause
