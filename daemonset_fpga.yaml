@@ -30,6 +30,7 @@ spec:
       containers:
       - command:
         - /usr/local/bin/xilinx-fpga-device-plugin
+        - -host-path=/usr/local/fp1
         - -logtostderr
         - -v=3
         image: 100.125.0.198:20202/fangjy-fpga/xilinx-fpga-device-plugin:1.0

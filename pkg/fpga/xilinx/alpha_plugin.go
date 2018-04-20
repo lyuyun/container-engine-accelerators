@@ -83,6 +83,11 @@ func (s *pluginServiceV1Alpha) Allocate(ctx context.Context, rqt *pluginapi.Allo
 	}
 
 	resp.Mounts = append(resp.Mounts, &pluginapi.Mount{
+		ContainerPath: "/sys/devices",
+		HostPath:      "/sys/devices",
+		ReadOnly:      false,
+	})
+	resp.Mounts = append(resp.Mounts, &pluginapi.Mount{
 		ContainerPath: s.ngm.containerPathPrefix,
 		HostPath:      s.ngm.hostPathPrefix,
 		ReadOnly:      true,
