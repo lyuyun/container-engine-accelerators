@@ -3,10 +3,10 @@ set -o pipefail
 set -u
 
 set -x
+KERNEL_VERSION="${KERNEL_VERSION:-3.10.0-327.59.59.46.h38.x86_64}"
 FP1_INSTALL_DIR_HOST="${FP1_INSTALL_DIR_HOST:-/usr/local/fp1}"
 FP1_INSTALL_DIR_CONTAINER="${FP1_INSTALL_DIR_CONTAINER:-/var/paas/fp1}"
 ROOT_MOUNT_DIR="${ROOT_MOUNT_DIR:-/root}"
-set +x
 
 RETCODE_SUCCESS=0
 RETCODE_ERROR=1
@@ -24,6 +24,14 @@ configure_fp1_installation_dirs() {
   pushd "${ROOT_MOUNT_DIR}${FP1_INSTALL_DIR_HOST}"
   mkdir -p bin lib
   popd
+  if [ ! -e /lib/modules/"$(uname -r)"/build ]; then
+    if grep -q EulerOS "${ROOT_MOUNT_DIR}/etc/os-release" && [ "$(uname -r)" = "${KERNEL_VERSION}" ]; then
+      rpm -ivh "/var/paas/kernel-devel-${KERNEL_VERSION}.rpm"
+    else
+      echo "Configuring installation directories... ERROR: /lib/modules/$(uname -r)/build not exists."
+      exit RETCODE_ERROR
+    fi
+  fi
   echo "Configuring installation directories... DONE."
 }
 
