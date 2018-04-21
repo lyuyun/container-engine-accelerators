@@ -14,16 +14,19 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: accelerator-fpga
+              - key: accelerator-fp1
                 operator: Exists
       hostNetwork: true
       hostPID: true
       imagePullSecrets:
       - name: default-secret
       volumes:
-      - name: dev
+      - name: src-mount
         hostPath:
-          path: /dev
+          path: /usr/src
+      - name: lib-mount
+        hostPath:
+          path: /lib/modules
       - name: root-mount
         hostPath:
           path: /
@@ -43,10 +46,13 @@ spec:
           - name: ROOT_MOUNT_DIR
             value: /root
         volumeMounts:
-        - name: dev
-          mountPath: /dev
+        - name: src-mount
+          mountPath: /usr/src
+          readOnly: true
+        - name: lib-mount
+          mountPath: /lib/modules
         - name: root-mount
           mountPath: /root
       containers:
-      - image: "cfe-pause:5.7.2"
+      - image: cfe-pause:5.7.2
         name: pause

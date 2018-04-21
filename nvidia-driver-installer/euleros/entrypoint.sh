@@ -3,7 +3,6 @@ set -o pipefail
 set -u
 
 set -x
-KERNEL_VERSION="${KERNEL_VERSION:-3.10.0-327.62.59.83.h65.x86_64}"
 FP1_INSTALL_DIR_HOST="${FP1_INSTALL_DIR_HOST:-/usr/local/fp1}"
 FP1_INSTALL_DIR_CONTAINER="${FP1_INSTALL_DIR_CONTAINER:-/var/paas/fp1}"
 ROOT_MOUNT_DIR="${ROOT_MOUNT_DIR:-/root}"
@@ -11,7 +10,6 @@ set +x
 
 RETCODE_SUCCESS=0
 RETCODE_ERROR=1
-RETRY_COUNT=5
 
 update_container_ld_cache() {
   echo "Updating container's ld cache..."
@@ -26,8 +24,6 @@ configure_fp1_installation_dirs() {
   pushd "${ROOT_MOUNT_DIR}${FP1_INSTALL_DIR_HOST}"
   mkdir -p bin lib
   popd
-  mkdir -p /lib/modules/"$(uname -r)"
-  ln -sf /usr/src/kernels/"${KERNEL_VERSION}" /lib/modules/"$(uname -r)"/build
   echo "Configuring installation directories... DONE."
 }
 
@@ -44,6 +40,7 @@ run_fp1_installer() {
   sh build_dpdk.sh
   mv dpdk-16.04/build/lib/* "${ROOT_MOUNT_DIR}${FP1_INSTALL_DIR_HOST}/lib"
   mv securec/lib/* "${ROOT_MOUNT_DIR}${FP1_INSTALL_DIR_HOST}/lib"
+  popd
   echo "Running FP1 installer... DONE."
 }
 
@@ -54,7 +51,7 @@ verify_fp1_installation() {
 
 update_host_ld_cache() {
   echo "Updating host's ld cache..."
-  echo "${FP1_INSTALL_DIR_HOST}/lib64" >> "${ROOT_MOUNT_DIR}/etc/ld.so.conf"
+  echo "${FP1_INSTALL_DIR_HOST}/lib" >> "${ROOT_MOUNT_DIR}/etc/ld.so.conf"
   ldconfig -r "${ROOT_MOUNT_DIR}"
   echo "Updating host's ld cache... DONE."
 }
